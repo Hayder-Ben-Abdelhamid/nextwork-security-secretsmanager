@@ -108,4 +108,3 @@ Once the merge conflict was resolved, I verified thet the GitHub repository is N
 
 
 ---
-*Built with [NextWork](https://nextwork.ai) - [View this project](https://nextwork.ai/projects/d6a05ea4-6c31-5e53-8688-de54814d6209)*
