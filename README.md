@@ -1,110 +1,129 @@
- # Secure Secrets with Secrets Manager
+# Secure Secrets with Secrets Manager
 
 **Author:** Hayder Ben Abdelhamid  
 **Email:** haider.abdelhamid@gmail.com  
 **Role:** Cybersecurity Engineering Student  
 
-This project is all about keeping sensitive AWS passwords and access keys safe. Instead of writing keys directly inside your code, you stored them safely in AWS Secrets Manager and wrote code to fetch them automatically. 
-You also learned how to use Git to clean up old project history so no hidden keys were left behind for hackers to find.
-
----
-
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_r7s8t9u0)
+This project is all about keeping sensitive AWS passwords and access keys safe. Instead of writing keys directly inside your code, you store them safely in AWS Secrets Manager and write code to fetch them automatically.  
+You also learn how to use Git to clean up old project history so no hidden keys are left behind for hackers to find.
 
 ---
 
 ## 1. Introducing Today's Project!
 
-In this project, I will demonstrate how to use AWS Secretes Manager for secure credentials management. I'm doing this project to learn how to protect our credentials when i connect live (in production) apps to our AWS environment and databases etc.[cite: 1]
+In this project, I demonstrated how to use AWS Secrets Manager for secure credentials management. I'm doing this project to learn how to protect our credentials when connecting live (production) apps to our AWS environment, databases, etc.
 
-### Key tools and concepts
+### Key Tools and Concepts
+* **AWS Services:** Secrets Manager, S3, IAM.
+* **Other Tools:** GitHub, Git (Rebase).
+* **Key Concepts:** GitHub secret scanning, the risks of hardcoding credentials, using `git rebase` to rewrite commit history, forking repositories, and secure configuration management.
 
-Services I used were Secrets Manager, GitHub, S3, IAM. Key concepts I learnt include GitHub secret scanning, the risks of hardcoding cdredentials, using git rebase to rewrite the commit history of a repository, forking a repository.[cite: 1]
+### Project Reflection
+This project took approximately 2 hours. The most challenging part was performing `git rebase` to clean up the commit history before pushing code to the repository. The most rewarding part was reviewing the git commit history and realizing how easily AWS credentials can leak through historical commits if not actively managed.
 
-### Project reflection
-
-This project took me approximately 2H. The most challenging part was git rebase (an extra bit of the project to push the code to our repository). It was most rewarding to review the git commit history, and see that you can really find AWS credentials in the history (even if the most updated version of that file no longer expose those credentials).[cite: 1]
-
-I chose to do this project today because i wanted to leran more about protecting/securing the code using services like AWS Secrets Manger. This project met the goal that i'm using the best practise crdentials management. This project also helped us build the skills in Git like rebasing along the way.[cite: 1]
-
----
-
-## 2. Hardcoding credentials
-
-### What I did in this step
-
-In this project, a sample web app is exposing the developers AWS credentials i.e. Their access key ID and secret access key. It is unsafe to harcode credentials becauseonce the code is made public in repository anyone can get access to those credentials and access to our AWS environement delete resources ans steal data .[cite: 1]
-
-I've set up the initial configuration with a set of Access key ID and Secret Access Key. These credentials are just examples because using test credentials preverts exposing my actual AWS credentials access while doing my project.[cite: 1]
-
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_j2k3l4m5)
+I chose to do this project today because I wanted to learn more about protecting and securing code using services like AWS Secrets Manager. This project met the goal of practicing best-practice credential management and helped build advanced Git skills along the way.
 
 ---
 
-## 3. Using my own AWS credentials
+## 2. Hardcoding Credentials
 
-### What I did in this step
+In this project, a sample web app initially exposed a developer's AWS credentials (Access Key ID and Secret Access Key). Hardcoding credentials is unsafe because once code is made public in a repository, anyone can extract those credentials, access the AWS environment, delete resources, and steal data.
 
-As an extension for this project, I also decided to run the web app locally using our AWS credentials, to set up my virtual environment, I installed packages like boto3, uvicorn and fastapi which are packages that our app's main file (app.py) uses to connect to the web app to AWS.[cite: 1]
+To practice safely, I used simulated test credentials to prevent exposing my actual live AWS keys during the project setup.
 
-When I first ran the app, I ran into an InvalidAccessKeyId error because i was using test credentials inside config.py, those credentials don't actually point to a real AWS account.[cite: 1]
+```python
+# Unsafe hardcoded credentials example pattern
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+```
 
-To resolve the 'InvalidAccessKeyId' error, I updated the configuration file (config.py) to use my account's access key Id and secrte access key and no more test credentials.[cite: 1]
+---
 
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_wghjteykut)
+## 3. Using My Own AWS Credentials
+
+As an extension of this project, I ran the web app locally using my own AWS credentials. To set up my virtual environment, I installed packages like `boto3`, `uvicorn`, and `fastapi`, which allow `app.py` to communicate with AWS.
+
+When I first ran the app, I encountered an `InvalidAccessKeyId` error because test credentials do not point to a real, active AWS account.
+
+```bash
+# Error output encountered during initial local run
+botocore.exceptions.ClientError: An error occurred (InvalidAccessKeyId) when calling the GetSecretValue operation: The AWS Access Key Id you provided does not exist in our records.
+```
+
+To resolve this, I updated `config.py` to use my active account credentials safely during initial local validation.
 
 ---
 
 ## 4. Pushing Insecure Code to GitHub
 
-### What I did in this step
+Once I updated the web app code, I forked the repository into a public GitHub account. A fork creates a new independent repository in your profile, whereas a clone copies code strictly to your local machine.
 
-Once I updated the web app code with credentials, I forked the repository code into your pubilic repo. A fork is different from a clone because it also creates a new repository in your GitHub account (where as a clone just copies that code into your local computer).[cite: 1]
+I linked my local repository to the remote fork and attempted to commit and push the changes:
 
-To connect my local repository to the forked repository, I run the command 'gir remote set-url origin'. Then I used git add and git commit to save the changes i made to config.py. Finally, git push uploads those chnages to the remote origin (i.e the forked repository).[cite: 1]
+```bash
+git remote set-url origin https://github.com/Hayder-Ben-Abdelhamid/Secure-Secrets-Project.git
+git add config.py
+git commit -m "Add AWS credentials to config"
+git push origin main
+```
 
-GitHub blocked my push because its secrets scanning features detected that i'm hardcoding AWS creadentials. This is a good security feature because it preverts us from revealing sensetives information in a public repository[cite: 1]
-
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_o2p3q4r5)
+**GitHub Secret Scanning Block:**  
+GitHub blocked my push because its automated secret scanning feature detected hardcoded AWS credentials. This is a vital security feature that prevents developers from accidentally leaking sensitive keys in public repositories.
 
 ---
 
 ## 5. Secrets Manager
 
-### What I did in this step
+AWS Secrets Manager is a service designed to securely store and retrieve secrets such as database credentials, API keys, and sensitive tokens. 
 
-Secrets Manager is an AWS service that helps us with securely storing and retrieving secrets e.g. databases credentials, API Keys and anything we deem sensitive. I'm using it to store my AWS access key ID and secret access key. Other common use cases include OAuth keys and even account IDs or URLs i dont want other people to see it in the code.[cite: 1]
+* **Secrets Rotation:** Automatically rotates secret values on a scheduled basis, minimizing the window of vulnerability if credentials are ever compromised.
+* **Code Integration:** Secrets Manager provides ready-to-use sample code in Python, Java, JavaScript, and other languages to integrate secure retrieval functions directly into applications.
 
-Another feature in Secrets Manager is secrets rotations which means the automatic rotation of the value os secrets on a consistent schedule. Secrets Managers will generate new value for thoses secrets and It's useful in situations where you'd want to minimise how long an attacker has access your databases/API keys if it ever infiltrates your credentials/serveces.[cite: 1]
+```python
+# Example snippet provided by Secrets Manager for Python
+import boto3
+from botocore.exceptions import ClientError
 
-Secrets Manager provides sample code in various languages, like Java, JavaScript, Python 3 and more. This is helpful because we can use this code samples directly in our config.py file to update the way we retrieve credentials. Now i can use functions to connect to Secrets Manager.[cite: 1]
+def get_secret():
+    secret_name = "TopSecretInfo"
+    region_name = "us-east-1"
 
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_h2i3j4k5)
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        raise e
+
+    return get_secret_value_response['SecretString']
+```
+
+---
+
+## 6. Updating the Web App Code
+
+I updated `config.py` to retrieve secrets programmatically rather than storing them statically. The `get_secret()` function establishes a secure connection to Secrets Manager using `boto3` and pulls the secure payload into a runtime variable.
+
+The configuration file now extracts the Access Key ID and Secret Access Key dynamically at runtime, ensuring no plaintext credentials exist in the source code.
 
 ---
 
-## 6. Updating the web app code
+## 7. Rebasing the Repository
 
-### What I did in this step
+Git rebasing modifies the commit history of a repository. I used an interactive rebase (`git rebase -i`) to drop the commit where hardcoded AWS credentials were originally introduced. This is crucial because historical commits can still expose secrets even if they are removed in the latest version of a file.
 
-I updated the config.py file to retrieve the secret stored in Secret Manger progromatically. The get_secret() function will set up a connection to Secret Manger (using boto3) and then will try to retrieve the value of the secret (with the secret name that i created when i used when i set it up) and store the secret's value in a variable called 'secret'[cite: 1]
+```bash
+# Interactive rebase command to clean up historical commits
+git rebase -i HEAD~3
+```
 
-I also added code to config.py to extract the value of the secret that i stored in Secrets Manger. This is important because the configuration file now is no longer has hardcoded credentials inside. It uses the function suggested by the code sample and spilts up the secret's value to store the access key ID and secure access key in the same variable that our app.py will continue to use[cite: 1]
+**Resolving Conflicts:**  
+A merge conflict occurred during rebasing because Git needed to reconcile changes made to `config.py` across commits. I manually edited `config.py` to ensure only the secure Secrets Manager implementation was retained.
 
-![Image](https://nextwork.ai/content_amber_heroic_karearea/uploads/d6a05ea4-6c31-5e53-8688-de54814d6209_v0w1x2y3)
-
----
-
-## 7. Rebasing the repository
-
-### What I did in this step
-
-Git rebasing is the process of changing the commit history of our repository. I used it to drop the commit where i hardcoded the AWS credentials. This was necessary because the AWS credentials are still living somewhere in my repository commit history otherwise (and if it's living in the commit history, it's still discoverable to attackers).[cite: 1]
-
-A merge conflict occurred during rebasing because Git now confused about whether it should also remove all the changes to config.py i made in a commit AFTER the commit i wanted to drop. I resolved the merge conflict by going directly into the config.py file, and manually removing all the parts i want to remove (hardcoded credentials) and keeping the code from Secrets Manger.[cite: 1]
-
-Once the merge conflict was resolved, I verified thet the GitHub repository is NOT exposing any of the credentials. I visited the config.py file in the forked repository, and can see that it uses code to extract the credentials insteaded of any hardcoding. I also successfully pushed the code without any blocking from GitHub Secrets Scanning.[cite: 1]
-
-
-
----
+**Final Verification:**  
+After completing the rebase, I verified that the public GitHub repository did not expose any credentials. The code pushed successfully without triggering GitHub Secret Scanning blocks.
